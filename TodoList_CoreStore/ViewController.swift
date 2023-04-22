@@ -3,13 +3,14 @@ import UIKit
 
 fileprivate let cellIdentifier = "Cell"
 
-class ViewController: UIViewController {
+final class ViewController: UIViewController {
     private lazy var addButton = UIBarButtonItem(
         title: "Add",
         style: .plain,
         target: self,
         action: #selector(addButtonHandler)
     )
+
     private lazy var tableView: UITableView = {
         let tableView = UITableView(frame: .zero, style: .plain)
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: cellIdentifier)
@@ -17,6 +18,7 @@ class ViewController: UIViewController {
         tableView.delegate = self
         return tableView
     }()
+
     private lazy var dataSource = DiffableDataSource.TableViewAdapter<Todo>(
         tableView: tableView,
         dataStack: CoreStoreDefaults.dataStack
@@ -31,8 +33,10 @@ class ViewController: UIViewController {
         cell.contentConfiguration = content
         return cell
     }
+
     private let fetchLimit: Int = 5
     private var todosFetchOffset: Int = 0
+
     private lazy var todoPublisher = CoreStoreDefaults.dataStack.publishList(
         From<Todo>()
             .orderBy(.descending(\.$updatedAt))
@@ -41,6 +45,7 @@ class ViewController: UIViewController {
                 $0.fetchLimit = self?.fetchLimit ?? 0
             }
     )
+
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.rightBarButtonItem = addButton
@@ -58,6 +63,7 @@ class ViewController: UIViewController {
         setupTableView()
     }
 }
+
 extension ViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         guard indexPath.row == todosFetchOffset - 2 else {
@@ -66,6 +72,7 @@ extension ViewController: UITableViewDelegate {
         print("load more here?")
     }
 }
+
 private extension ViewController {
     private func setupTableView() {
         view.addSubview(tableView)
